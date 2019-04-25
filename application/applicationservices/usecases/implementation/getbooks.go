@@ -1,8 +1,8 @@
 package implementation
 
 import (
-	"restapi/application/applicationdto"
-	"restapi/application/applicationservices/usecases/interfaces"
+	"github.com/nhmendes/restapi/application/applicationdto"
+	"github.com/nhmendes/restapi/application/applicationservices/usecases/interfaces"
 )
 
 // GetBooks : get all books use case implementation

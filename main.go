@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"restapi/restwebapi"
+
+	"github.com/nhmendes/restapi/restwebapi"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"

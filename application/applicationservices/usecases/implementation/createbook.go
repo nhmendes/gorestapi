@@ -2,8 +2,9 @@ package implementation
 
 import (
 	"fmt"
-	"restapi/application/applicationdto"
-	"restapi/application/applicationservices/usecases/interfaces"
+
+	"github.com/nhmendes/restapi/application/applicationdto"
+	"github.com/nhmendes/restapi/application/applicationservices/usecases/interfaces"
 )
 
 // CreateBook : new book use case implementation

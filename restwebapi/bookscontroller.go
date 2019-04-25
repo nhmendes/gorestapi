@@ -3,8 +3,9 @@ package restwebapi
 import (
 	"encoding/json"
 	"net/http"
-	"restapi/application/applicationdto"
-	"restapi/application/applicationservices/usecases/implementation"
+
+	"github.com/nhmendes/restapi/application/applicationdto"
+	"github.com/nhmendes/restapi/application/applicationservices/usecases/implementation"
 
 	"github.com/gorilla/mux"
 )
@@ -24,7 +25,7 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 func GetBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
-	
+
 	var getbookbyid = implementation.NewGetBookByID()
 	var result = getbookbyid.Execute(params["id"])
 
