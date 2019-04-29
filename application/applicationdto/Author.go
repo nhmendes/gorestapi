@@ -2,6 +2,6 @@ package applicationdto
 
 // Author struct
 type Author struct {
-	Firstname string `json:"firstname"`
-	Lastname  string `json:"lastname"`
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
 }

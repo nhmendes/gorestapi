@@ -16,14 +16,14 @@ func NewGetBookByID() *GetBookByID {
 }
 
 // Execute : executes the get all books use case
-func (r *GetBookByID) Execute(id string) applicationdto.Book {
+func (r *GetBookByID) Execute(id string) (applicationdto.Book, error) {
 	return applicationdto.Book{
 		ID:    id, // "1",
 		Isbn:  "438227",
 		Title: "Book One",
 		Author: &applicationdto.Author{
-			Firstname: "John",
-			Lastname:  "Doe",
+			FirstName: "John",
+			LastName:  "Doe",
 		},
-	}
+	}, nil
 }

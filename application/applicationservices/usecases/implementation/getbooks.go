@@ -23,8 +23,8 @@ func (r *GetBooks) Execute() []applicationdto.Book {
 		Isbn:  "438227",
 		Title: "Book One",
 		Author: &applicationdto.Author{
-			Firstname: "John",
-			Lastname:  "Doe",
+			FirstName: "John",
+			LastName:  "Doe",
 		},
 	})
 }

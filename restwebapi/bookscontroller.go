@@ -14,23 +14,47 @@ import (
 func GetBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var getbooks = implementation.NewGetBooks()
-	var result = getbooks.Execute()
+	getbooks := implementation.NewGetBooks()
+	result := getbooks.Execute()
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(result)
+	err := json.NewEncoder(w).Encode(result)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
 
-// GetBook - Get single book
+// GetBook godoc
+// @Summary executes the get book by id use case
+// @Description gets a book by ID
+// @ID string
+// @Tags books
+// @Accept  json
+// @Produce  json
+// @Param  id path string true "Book ID"
+// @Success 200 {object} Book
+// @Failure 400 {object} httputil.HTTPError
+// @Failure 404 {object} httputil.HTTPError
+// @Failure 500 {object} httputil.HTTPError
+// @Router /bottles/{id} [get]
 func GetBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 
-	var getbookbyid = implementation.NewGetBookByID()
-	var result = getbookbyid.Execute(params["id"])
+	getbookbyid := implementation.NewGetBookByID()
+	result, err := getbookbyid.Execute(params["id"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(result)
+	encodeError := json.NewEncoder(w).Encode(result)
+
+	if encodeError != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
 
 // CreateBook - Add new book
@@ -39,7 +63,7 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 	var book applicationdto.Book
 	_ = json.NewDecoder(r.Body).Decode(&book)
 
-	var createbook = implementation.NewCreateBook()
+	createbook := implementation.NewCreateBook()
 	createbook.Execute(book)
 
 	w.WriteHeader(http.StatusCreated)
@@ -54,7 +78,7 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&book)
 	book.ID = params["id"]
 
-	var updatebook = implementation.NewUpdateBook()
+	updatebook := implementation.NewUpdateBook()
 	updatebook.Execute(book)
 
 	w.WriteHeader(http.StatusNoContent)
@@ -65,7 +89,7 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 
-	var deletebook = implementation.NewDeleteBook()
+	deletebook := implementation.NewDeleteBook()
 	deletebook.Execute(params["id"])
 
 	w.WriteHeader(http.StatusNoContent)

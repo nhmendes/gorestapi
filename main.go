@@ -7,7 +7,7 @@ import (
 
 	"github.com/nhmendes/restapi/restwebapi"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 )
 
@@ -25,14 +25,15 @@ func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 			})
 
 			if err != nil {
-				fmt.Fprintf(w, err.Error())
+				_, _ = fmt.Fprintf(w, err.Error())
 			}
 
-			if token.Valid {
+			if token != nil &&  token.Valid == true {
 				endpoint(w, r)
 			}
+
 		} else {
-			fmt.Fprintf(w, "not authorized")
+			_, _ = fmt.Fprintf(w, "not authorized")
 		}
 	})
 }
