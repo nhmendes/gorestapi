@@ -3,21 +3,23 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/nhmendes/restapi/restwebapi"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gorilla/mux"
+	//"github.com/gorilla/mux"
+
+	"github.com/gin-gonic/gin"
 )
 
 var mySigningKey = []byte("mykey")
 
-func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func isAuthorized(endpoint func(c *gin.Context)) gin.HandlerFunc {
 
-		if r.Header["Token"] != nil {
-			token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+	return gin.HandlerFunc(func(c *gin.Context) {
+
+		if c.Request.Header["Token"] != nil {
+			token, err := jwt.Parse(c.Request.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, fmt.Errorf("there was an error")
 				}
@@ -25,33 +27,28 @@ func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handle
 			})
 
 			if err != nil {
-				_, _ = fmt.Fprintf(w, err.Error())
+				_, _ = fmt.Fprintf(c.Writer, err.Error())
 			}
 
-			if token != nil &&  token.Valid == true {
-				endpoint(w, r)
+			if token != nil && token.Valid == true {
+				endpoint(c)
 			}
 
 		} else {
-			_, _ = fmt.Fprintf(w, "not authorized")
+			_, _ = fmt.Fprintf(c.Writer, "not authorized")
 		}
 	})
 }
 
 // Main function
 func main() {
-	// Init router
-	r := mux.NewRouter().StrictSlash(true)
-
-	// Route handles & endpoints
-	r.Handle("/books", isAuthorized(restwebapi.GetBooks)).Methods("GET")
-	r.Handle("/books/{id}", isAuthorized(restwebapi.GetBook)).Methods("GET")
-	r.Handle("/books", isAuthorized(restwebapi.CreateBook)).Methods("POST")
-	r.Handle("/books/{id}", isAuthorized(restwebapi.UpdateBook)).Methods("PUT")
-	r.Handle("/books/{id}", isAuthorized(restwebapi.DeleteBook)).Methods("DELETE")
-
-	// Start server
-	log.Fatal(http.ListenAndServe(":8001", r))
+	r := gin.Default()
+	r.GET("/books", isAuthorized(restwebapi.GetBooks))
+	r.GET("/books/{id}", isAuthorized(restwebapi.GetBook))
+	r.POST("/books", isAuthorized(restwebapi.CreateBook))
+	r.PUT("/books/{id}", isAuthorized(restwebapi.UpdateBook))
+	r.DELETE("/books/{id}", isAuthorized(restwebapi.DeleteBook))
+	log.Fatal(r.Run(":8001"))
 }
 
 // Request sample

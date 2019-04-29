@@ -7,21 +7,22 @@ import (
 	"github.com/nhmendes/restapi/application/applicationdto"
 	"github.com/nhmendes/restapi/application/applicationservices/usecases/implementation"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 // GetBooks - Get all books
-func GetBooks(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+func GetBooks(c *gin.Context) {
+
+	c.Writer.Header().Set("Content-Type", "application/json")
 
 	getbooks := implementation.NewGetBooks()
 	result := getbooks.Execute()
 
-	w.WriteHeader(http.StatusOK)
-	err := json.NewEncoder(w).Encode(result)
+	c.Writer.WriteHeader(http.StatusOK)
+	err := json.NewEncoder(c.Writer).Encode(result)
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		c.Writer.WriteHeader(http.StatusInternalServerError)
 	}
 }
 
@@ -38,59 +39,60 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {object} httputil.HTTPError
 // @Failure 500 {object} httputil.HTTPError
 // @Router /bottles/{id} [get]
-func GetBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
+func GetBook(c *gin.Context) {
+
+	c.Writer.Header().Set("Content-Type", "application/json")
 
 	getbookbyid := implementation.NewGetBookByID()
-	result, err := getbookbyid.Execute(params["id"])
+	result, err := getbookbyid.Execute(c.Params.ByName("id"))
 
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
+		c.Writer.WriteHeader(http.StatusNotFound)
 	}
 
-	w.WriteHeader(http.StatusOK)
-	encodeError := json.NewEncoder(w).Encode(result)
+	c.Writer.WriteHeader(http.StatusOK)
+	encodeError := json.NewEncoder(c.Writer).Encode(result)
 
 	if encodeError != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		c.Writer.WriteHeader(http.StatusInternalServerError)
 	}
 }
 
 // CreateBook - Add new book
-func CreateBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+func CreateBook(c *gin.Context) {
+
+	c.Writer.Header().Set("Content-Type", "application/json")
 	var book applicationdto.Book
-	_ = json.NewDecoder(r.Body).Decode(&book)
+	_ = json.NewDecoder(c.Request.Body).Decode(&book)
 
 	createbook := implementation.NewCreateBook()
 	createbook.Execute(book)
 
-	w.WriteHeader(http.StatusCreated)
+	c.Writer.WriteHeader(http.StatusCreated)
 }
 
 // UpdateBook - Update book
-func UpdateBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
+func UpdateBook(c *gin.Context) {
+
+	c.Writer.Header().Set("Content-Type", "application/json")
 
 	var book applicationdto.Book
-	_ = json.NewDecoder(r.Body).Decode(&book)
-	book.ID = params["id"]
+	_ = json.NewDecoder(c.Request.Body).Decode(&book)
+	book.ID = c.Params.ByName("id")
 
 	updatebook := implementation.NewUpdateBook()
 	updatebook.Execute(book)
 
-	w.WriteHeader(http.StatusNoContent)
+	c.Writer.WriteHeader(http.StatusNoContent)
 }
 
 // DeleteBook - Delete book
-func DeleteBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
+func DeleteBook(c *gin.Context) {
+
+	c.Writer.Header().Set("Content-Type", "application/json")
 
 	deletebook := implementation.NewDeleteBook()
-	deletebook.Execute(params["id"])
+	deletebook.Execute(c.Params.ByName("id"))
 
-	w.WriteHeader(http.StatusNoContent)
+	c.Writer.WriteHeader(http.StatusNoContent)
 }
