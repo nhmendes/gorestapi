@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/nhmendes/restapi/application/applicationdto"
-	"github.com/nhmendes/restapi/application/applicationservices/usecases/implementation"
+	"github.com/nhmendes/gorestapi/application/applicationdto"
+	"github.com/nhmendes/gorestapi/application/applicationservices/usecases/implementation"
 
 	"github.com/gin-gonic/gin"
 )
