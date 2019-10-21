@@ -1,0 +1,18 @@
+type Book {
+	id:    ID!
+	isbn:  String!
+	title: String!
+}
+
+input NewBook {
+    isbn: String!
+    title: String!
+}
+
+type Mutation {
+    createBook(input: NewBook!): Video!
+}
+
+type Query {
+    Books(limit: Int = 25, offset: Int = 0): [Book!]!
+}

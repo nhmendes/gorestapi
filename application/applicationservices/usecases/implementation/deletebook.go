@@ -3,7 +3,7 @@ package implementation
 import (
 	"fmt"
 
-	"github.com/nhmendes/restapi/application/applicationservices/usecases/interfaces"
+	"github.com/nhmendes/gorestapi/application/applicationservices/usecases/interfaces"
 )
 
 // DeleteBook : new book use case implementation
