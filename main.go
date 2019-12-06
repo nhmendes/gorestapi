@@ -18,8 +18,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 
@@ -27,15 +29,68 @@ import (
 
 	"github.com/gin-gonic/gin"
 	//"github.com/gorilla/mux"
+	"github.com/mitchellh/mapstructure"
 )
 
 var mySigningKey = []byte("mykey")
 
-func isAuthorized(endpoint func(c *gin.Context)) gin.HandlerFunc {
+func users(c *gin.Context) {
+	/*decoded := c.Request.Header.Get("decoded")
+	var user User
+	mapstructure.Decode(decoded.(jwt.MapClaims), &user)
+	json.NewEncoder(w).Encode(user)*/
+}
 
+func isAuthorized(endpoint func(c *gin.Context)) gin.HandlerFunc {
 	return gin.HandlerFunc(func(c *gin.Context) {
-		if c.Request.Header["Token"] != nil {
-			token, err := jwt.Parse(c.Request.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+		authorizationHeader := c.Request.Header.Get("authorization")
+		if authorizationHeader != "" {
+			bearerToken := strings.Split(authorizationHeader, " ")
+			if len(bearerToken) == 2 {
+				token, error := jwt.Parse(bearerToken[1], func(token *jwt.Token) (interface{}, error) {
+					if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+						return nil, fmt.Errorf("There was an error")
+					}
+					return []byte("secret"), nil
+				})
+				if error != nil {
+					json.NewEncoder(c.Writer).Encode(restwebapi.ErrorMsg{Message: error.Error()})
+					return
+				}
+				if token.Valid {
+
+					var user restwebapi.User
+					mapstructure.Decode(token.Claims, &user)
+
+					name := c.Params.ByName("userId")
+					if name != user.Username {
+						json.NewEncoder(c.Writer).Encode(restwebapi.ErrorMsg{Message: "Invalid authorization token - Does not match UserID"})
+						return
+					}
+
+					//context.Set(req, "decoded", token.Claims)
+					endpoint(c)
+				} else {
+					json.NewEncoder(c.Writer).Encode(restwebapi.ErrorMsg{Message: "Invalid authorization token"})
+				}
+			} else {
+				json.NewEncoder(c.Writer).Encode(restwebapi.ErrorMsg{Message: "Invalid authorization token"})
+			}
+		} else {
+			json.NewEncoder(c.Writer).Encode(restwebapi.ErrorMsg{Message: "An authorization header is required"})
+		}
+	})
+}
+
+func isAuthorizedOld(endpoint func(c *gin.Context)) gin.HandlerFunc {
+	return gin.HandlerFunc(func(c *gin.Context) {
+
+		if c.Request.Header["Authorization"] != nil {
+
+			bearerToken := c.Request.Header.Get("Authorization")
+			jwtString := strings.Split(bearerToken, " ")[1]
+
+			token, err := jwt.Parse(jwtString, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, fmt.Errorf("there was an error")
 				}
