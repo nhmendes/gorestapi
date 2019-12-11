@@ -72,8 +72,8 @@ func GetToken(c *gin.Context) {
 	}
 }
 
-// GetToken_old - Generates a new token (JWT)
-func GetToken_old(c *gin.Context) {
+// GetTokenOld - Generates a new token (JWT)
+func GetTokenOld(c *gin.Context) {
 
 	mySigningKey := []byte("AllYourBase")
 	/*

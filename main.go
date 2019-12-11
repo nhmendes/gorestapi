@@ -58,10 +58,9 @@ func isAuthorized(endpoint func(c *gin.Context)) gin.HandlerFunc {
 					return
 				}
 				if token.Valid {
-
 					var user restwebapi.User
 					mapstructure.Decode(token.Claims, &user)
-
+					
 					name := c.Params.ByName("userId")
 					if name != user.Username {
 						json.NewEncoder(c.Writer).Encode(restwebapi.ErrorMsg{Message: "Invalid authorization token - Does not match UserID"})
