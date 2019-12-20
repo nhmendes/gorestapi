@@ -18,6 +18,7 @@ func NewCreateBook() *CreateBook {
 }
 
 // Execute : executes the get all books use case
-func (r *CreateBook) Execute(book applicationdto.Book) {
+func (r *CreateBook) Execute(book applicationdto.Book) (string, error) {
 	fmt.Printf("created book %s", book.ID)
+	return book.ID, nil
 }
