@@ -2,17 +2,16 @@ package tests
 
 import (
 	"testing"
-
-	"github.com/nhmendes/gorestapi/application/applicationdto"
-	"github.com/nhmendes/gorestapi/application/applicationservices/usecases/implementation"
 )
 
 func TestExecute(t *testing.T) {
 
+	b := new(applicationdto.Book)
+	b.ID = "1"
+	b.ShowDetails()
+
 	var book applicationdto.Book
 	book = applicationdto.Book{ID: "id", Isbn: "isbn", Title: "title", Author: nil}
-
-	//book.ShowDetails()
 
 	expected := book.ID
 
