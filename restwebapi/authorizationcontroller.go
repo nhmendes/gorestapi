@@ -3,7 +3,6 @@ package restwebapi
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -19,7 +18,7 @@ type User struct {
 }
 
 // AuthToken ...
-// This is what is retured to the user
+// This is what is returned to the user
 type AuthToken struct {
 	TokenType string `json:"token_type"`
 	Token     string `json:"access_token"`
@@ -27,7 +26,7 @@ type AuthToken struct {
 }
 
 // AuthTokenClaim ...
-// This is the cliam object which gets parsed from the authorization header
+// This is the claim object which gets parsed from the authorization header
 type AuthTokenClaim struct {
 	*jwt.StandardClaims
 	User
@@ -55,9 +54,9 @@ func GetToken(c *gin.Context) {
 		User{user.Username, user.Password},
 	}
 
-	tokenString, error := token.SignedString([]byte("secret"))
-	if error != nil {
-		fmt.Println(error)
+	tokenString, err := token.SignedString([]byte("secret"))
+	if err != nil {
+		fmt.Println(err)
 	}
 
 	c.Writer.WriteHeader(http.StatusOK)
@@ -66,42 +65,6 @@ func GetToken(c *gin.Context) {
 		TokenType: "Bearer",
 		ExpiresIn: expiresAt,
 	})
-
-	if encodeError != nil {
-		c.Writer.WriteHeader(http.StatusInternalServerError)
-	}
-}
-
-// GetTokenOld - Generates a new token (JWT)
-func GetTokenOld(c *gin.Context) {
-
-	mySigningKey := []byte("AllYourBase")
-	/*
-		// Create the Claims
-		claims := &jwt.StandardClaims{
-			ExpiresAt: 15000,
-			Issuer:    "test",
-		}*/
-
-	// Create a new token object, specifying signing method and the claims
-	// you would like it to contain.
-	/*token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"foo": "bar",
-		"nbf": time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
-	})*/
-
-	//token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	// Sign and get the complete encoded token as a string using the secret
-	result, err := token.SignedString(mySigningKey)
-
-	if err != nil {
-		log.Fatalf("failed to create new token, error: %v", err)
-	}
-
-	c.Writer.WriteHeader(http.StatusOK)
-	encodeError := json.NewEncoder(c.Writer).Encode(result)
 
 	if encodeError != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)

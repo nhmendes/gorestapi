@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"github.com/nhmendes/gorestapi/application/applicationdto"
+	"github.com/nhmendes/gorestapi/application/applicationservices/usecases/implementation"
 	"testing"
 )
 
@@ -15,17 +17,17 @@ func TestExecute(t *testing.T) {
 
 	expected := book.ID
 
-	createbook := implementation.NewCreateBook()
-	actual, err := createbook.Execute(book)
+	createBook := implementation.NewCreateBook()
+	actual, err := createBook.Execute(book)
 
 	//getbookbyid := implementation.NewGetBookByID()
 	//result, err := getbookbyid.Execute(book.ID)
 
 	if err != nil {
-		t.Error("erro")
+		t.Error("error")
 	}
 
 	if expected != actual {
-		t.Error("erro")
+		t.Error("error")
 	}
 }

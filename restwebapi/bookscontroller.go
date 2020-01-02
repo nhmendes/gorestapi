@@ -49,8 +49,8 @@ func GetBooks(c *gin.Context) {
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 
-	getbooks := implementation.NewGetBooks()
-	result := getbooks.Execute()
+	getBooks := implementation.NewGetBooks()
+	result := getBooks.Execute()
 
 	c.Writer.WriteHeader(http.StatusOK)
 	err2 := json.NewEncoder(c.Writer).Encode(result)
@@ -77,8 +77,8 @@ func GetBook(c *gin.Context) {
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 
-	getbookbyid := implementation.NewGetBookByID()
-	result, err := getbookbyid.Execute(c.Params.ByName("id"))
+	getBookById := implementation.NewGetBookByID()
+	result, err := getBookById.Execute(c.Params.ByName("id"))
 
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusNotFound)
@@ -97,12 +97,28 @@ func CreateBook(c *gin.Context) {
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 	var book applicationdto.Book
-	_ = json.NewDecoder(c.Request.Body).Decode(&book)
+	err := json.NewDecoder(c.Request.Body).Decode(&book)
 
-	createbook := implementation.NewCreateBook()
-	createbook.Execute(book)
+	if err != nil {
+		//c.Writer.WriteHeader(http.StatusInternalServerError)
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"status": http.StatusInternalServerError, "message": "error!"})
+	}
 
-	c.Writer.WriteHeader(http.StatusCreated)
+	createBook := implementation.NewCreateBook()
+	bookId, err := createBook.Execute(book)
+
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"status": http.StatusInternalServerError, "message": "error!"})
+	}
+
+	//c.Writer.WriteHeader(http.StatusCreated)
+	c.JSON(
+		http.StatusCreated,
+		gin.H{"status": http.StatusCreated, "message": "Todo item created successfully!", "resourceId": bookId})
 }
 
 // UpdateBook - Update book
@@ -114,8 +130,8 @@ func UpdateBook(c *gin.Context) {
 	_ = json.NewDecoder(c.Request.Body).Decode(&book)
 	book.ID = c.Params.ByName("id")
 
-	updatebook := implementation.NewUpdateBook()
-	updatebook.Execute(book)
+	updateBook := implementation.NewUpdateBook()
+	updateBook.Execute(book)
 
 	c.Writer.WriteHeader(http.StatusNoContent)
 }
@@ -125,8 +141,8 @@ func DeleteBook(c *gin.Context) {
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 
-	deletebook := implementation.NewDeleteBook()
-	deletebook.Execute(c.Params.ByName("id"))
+	deleteBook := implementation.NewDeleteBook()
+	deleteBook.Execute(c.Params.ByName("id"))
 
 	c.Writer.WriteHeader(http.StatusNoContent)
 }
