@@ -133,11 +133,11 @@ func main() {
 	//   '200':
 	//     description: successful operation
 	r.GET("/books", isAuthorized(restwebapi.GetBooks))
+	r.GET("/books/:id", isAuthorized(restwebapi.GetBook))
 
-	r.GET("/books/{id}", isAuthorized(restwebapi.GetBook))
 	r.POST("/books", isAuthorized(restwebapi.CreateBook))
-	r.PUT("/books/{id}", isAuthorized(restwebapi.UpdateBook))
-	r.DELETE("/books/{id}", isAuthorized(restwebapi.DeleteBook))
+	r.PUT("/books/:id", isAuthorized(restwebapi.UpdateBook))
+	r.DELETE("/books/:id", isAuthorized(restwebapi.DeleteBook))
 
 	log.Fatal(r.Run(":8001"))
 }

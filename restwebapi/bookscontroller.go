@@ -61,24 +61,12 @@ func GetBooks(c *gin.Context) {
 }
 
 // GetBook godoc
-// @Summary executes the get book by id use case
-// @Description gets a book by ID
-// @ID string
-// @Tags books
-// @Accept  json
-// @Produce  json
-// @Param  id path string true "Book ID"
-// @Success 200 {object} Book
-// @Failure 400 {object} httputil.HTTPError
-// @Failure 404 {object} httputil.HTTPError
-// @Failure 500 {object} httputil.HTTPError
-// @Router /bottles/{id} [get]
 func GetBook(c *gin.Context) {
 
 	c.Writer.Header().Set("Content-Type", "application/json")
 
-	getBookById := implementation.NewGetBookByID()
-	result, err := getBookById.Execute(c.Params.ByName("id"))
+	getBookByID := implementation.NewGetBookByID()
+	result, err := getBookByID.Execute(c.Params.ByName("id"))
 
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusNotFound)
@@ -107,7 +95,7 @@ func CreateBook(c *gin.Context) {
 	}
 
 	createBook := implementation.NewCreateBook()
-	bookId, err := createBook.Execute(book)
+	bookID, err := createBook.Execute(book)
 
 	if err != nil {
 		c.JSON(
@@ -118,8 +106,9 @@ func CreateBook(c *gin.Context) {
 	//c.Writer.WriteHeader(http.StatusCreated)
 	c.JSON(
 		http.StatusCreated,
-		gin.H{"status": http.StatusCreated, "message": "Todo item created successfully!", "resourceId": bookId})
+		gin.H{"status": http.StatusCreated, "message": "Todo item created successfully!", "resourceId": bookID})
 }
+
 
 // UpdateBook - Update book
 func UpdateBook(c *gin.Context) {
@@ -144,5 +133,28 @@ func DeleteBook(c *gin.Context) {
 	deleteBook := implementation.NewDeleteBook()
 	deleteBook.Execute(c.Params.ByName("id"))
 
+	/*container := BuildContainer()
+	err := container.Invoke(func(deleteBook *implementation.DeleteBook) {
+		deleteBook.Execute(c.Params.ByName("id"))
+	})
+	if err != nil {
+		panic(err)
+	}*/
+
 	c.Writer.WriteHeader(http.StatusNoContent)
 }
+
+/*
+// BuildContainer -
+func BuildContainer() *dig.Container {
+	container := dig.New()
+
+	container.Provide(implementation.NewGetBooks)
+	container.Provide(implementation.NewGetBookByID)
+	container.Provide(implementation.NewCreateBook)
+	container.Provide(implementation.NewUpdateBook)
+	container.Provide(implementation.NewDeleteBook)
+
+	return container
+}
+*/
