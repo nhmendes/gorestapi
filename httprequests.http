@@ -16,6 +16,7 @@ Authorization: token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODU0NDEwNj
 POST http://localhost:8001/books/ HTTP/1.1
 Authorization: token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODU0NDEwNjAsInVzZXJuYW1lIjoiIiwicGFzc3dvcmQiOiIifQ.yUMpX_KvYto4xaw4rARZ8kuV_UNIxE6z5uyUeT1Zyr8
 content-type: application/json
+
 {
     "id": "3",
     "isbn": "666555",
